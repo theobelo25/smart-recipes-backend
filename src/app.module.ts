@@ -5,10 +5,16 @@ import { UsersModule } from './domain/users/users.module.js';
 import { CommonModule } from './common/common.module.js';
 import { EnvModule } from './env/env.module.js';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
-  imports: [UsersModule, CommonModule, EnvModule, ConfigModule.forRoot(), AuthModule],
+  imports: [
+    UsersModule,
+    CommonModule,
+    EnvModule,
+    ConfigModule.forRoot(),
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
