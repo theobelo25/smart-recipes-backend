@@ -1,30 +1,29 @@
 import {
   BadRequestException,
   ExecutionContext,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginDto } from '../../dto/login.dto.js';
-import { plainToClass } from 'class-transformer';
-import { validate } from 'class-validator';
 import { type FastifyRequest } from 'fastify';
+import { Ajv, type JSONSchemaType } from 'ajv';
+import { loginSchema } from '../../schemas/login.schema.js';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
+  private readonly schema: JSONSchemaType<LoginDto>;
+
+  constructor(@Inject('AJV') private readonly ajv: Ajv) {
+    super();
+    this.schema = loginSchema;
+  }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<FastifyRequest>();
-    const body = plainToClass(LoginDto, request.body);
-    const errors = await validate(body, {
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    });
+    const validate = this.ajv.compile(this.schema);
+    const isValid = validate(request.body);
 
-    if (errors.length) {
-      const errorMessages = errors
-        .flatMap(({ constraints }) => Object.values(constraints!))
-        .join(', ');
-      throw new BadRequestException(errorMessages);
-    }
+    if (!isValid) throw new BadRequestException(validate.errors![0].message);
 
     const result = (await super.canActivate(context)) as boolean;
 
