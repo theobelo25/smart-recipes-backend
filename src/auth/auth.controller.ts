@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard.js';
-import { type FastifyRequest } from 'fastify';
+import { User } from './decorators/user.decorator.js';
+import { type RequestUser } from './interfaces/request-user.interface.js';
 
 @Controller('auth')
 export class AuthController {
@@ -17,7 +18,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req: FastifyRequest) {
-    return req.user;
+  login(@User() user: RequestUser) {
+    return user;
   }
 }
