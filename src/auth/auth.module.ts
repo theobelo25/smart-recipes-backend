@@ -12,6 +12,8 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard.js';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import throttlerConfig from './config/throttler.config.js';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard.js';
     PassportModule,
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
+    ThrottlerModule.forRootAsync(throttlerConfig.asProvider()),
   ],
   controllers: [AuthController],
   providers: [
@@ -29,6 +32,10 @@ import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard.js';
     },
     LocalStrategy,
     JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
