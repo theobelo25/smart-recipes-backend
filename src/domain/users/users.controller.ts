@@ -13,12 +13,14 @@ import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { IdDto } from '../../common/dto/id.dto.js';
 import { PaginationDto } from '../../common/dto/pagination.dto.js';
+import { Public } from '../../auth/decorators/public.decorator.js';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @Public()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
