@@ -1,4 +1,4 @@
-import { IsCardinal } from '../decorators/is-cardinal.decorator.js';
+import { IsCardinal } from '../decorators/validators/is-cardinal.decorator.js';
 
 export class IdDto {
   @IsCardinal()
